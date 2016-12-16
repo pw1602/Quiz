@@ -1,0 +1,11 @@
+#include "Menu.h"
+
+using namespace std;
+
+int main()
+{
+	Menu menu;
+	menu.Menu_Glowne();
+
+	return EXIT_SUCCESS;
+}

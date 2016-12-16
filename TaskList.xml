@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Tasks>
+  <item>
+    <text>Określenie liczby pytań przez admina</text>
+    <finished>false</finished>
+  </item>
+  <item>
+    <text>specyfikację pytań oraz odpowiedzi (w tym wskazanie jednej lub wielu odpowiedzi)</text>
+    <finished>false</finished>
+  </item>
+  <item>
+    <text>zapisanie testu do bazy danych w formie pliku</text>
+    <finished>false</finished>
+  </item>
+  <item>
+    <text>wczytanie testu i możliwość rozwiązania go przez użytkownika</text>
+    <finished>false</finished>
+  </item>
+  <item>
+    <text>specyfikację czasu rozwiązania testu</text>
+    <finished>false</finished>
+  </item>
+  <item>
+    <text>Program powinien zapewnić graficzne menu oraz możliwość wyboru opcji rozwiązania w formie formularza w aplikacji</text>
+    <finished>false</finished>
+  </item>
+</Tasks>
