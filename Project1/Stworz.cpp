@@ -81,27 +81,28 @@ bool Stworz::Wczytaj()
 
 void Stworz::Edytuj()
 {
-	int rozmiar_czcionki_pytania;
+	int rozmiar_czcionki_pytania = 0;
 	bool tworzenie = true, mozliwosc_zaznaczenia = true;
-	Text wyjdz, zapisz, nastepne_pytanie, poprzednie_pytanie, ilosc_pytan_tekst, dodaj_pytanie, usun_pytanie;
-	size_t maxTextLength = 50; //Maksymalna d≥ugoúÊ wpisywanego tekstu
+	Text wyjdz, zapisz, nastepne_pytanie, poprzednie_pytanie, ilosc_pytan_tekst, dodaj_pytanie, usun_pytanie, numer_pytania;
 	wstring tekst; //Tekst jaki zostaje wpisywany
+	string wybor_str[] = { "A. ", "B. ", "C. ", "D. " };
+	WYBOR wybor;
 
 	//--------------------------------------------------Ustawienia tekstu i jego tla w quzie--------------------------------------------------
 	//NastÍpne pytanie
 	Ustawienia_tekstu(nastepne_pytanie, *czcionka, 30, 1, Color::Blue, L"NastÍpne");
-	nastepne_pytanie.setPosition(600, 600);
+	nastepne_pytanie.setPosition(750, 600);
 
 	//Poprzednie pytanie
 	Ustawienia_tekstu(poprzednie_pytanie, *czcionka, 30, 1, Color::Blue, L"Poprzednie");
 	poprzednie_pytanie.setPosition(100, 600);
 
 	//ZakoÒczenie quizu
-	Ustawienia_tekstu(zapisz, *czcionka, 25, 1, Color::Blue, L"Zapisz pytania");
+	Ustawienia_tekstu(zapisz, *czcionka, 25, 1, Color::Blue, L"Zapisz");
 	zapisz.setPosition(okno->getSize().x / 2 - zapisz.getGlobalBounds().width / 2, okno->getSize().y - zapisz.getGlobalBounds().height - 20);
 
 	//Wyjúcie z quizu
-	Ustawienia_tekstu(wyjdz, *czcionka, 25, 1, Color::Blue, L"Wyjdü");
+	Ustawienia_tekstu(wyjdz, *czcionka, 40, 1, Color::Blue, L"<-");
 	wyjdz.setPosition(20, okno->getSize().y - wyjdz.getGlobalBounds().height - 20);
 
 	//IloúÊ pytaÒ
@@ -110,12 +111,24 @@ void Stworz::Edytuj()
 	ilosc_pytan_tekst.setPosition(okno->getSize().x / 2 - ilosc_pytan_tekst.getGlobalBounds().width / 2, 20);
 
 	//Dodaj pytanie
-	Ustawienia_tekstu(dodaj_pytanie, *czcionka, 25, 1, Color::Blue, L"Dodaj pytanie");
-	dodaj_pytanie.setPosition(okno->getSize().x - dodaj_pytanie.getGlobalBounds().width - 20, okno->getSize().y - dodaj_pytanie.getGlobalBounds().height - 20);
+	Ustawienia_tekstu(dodaj_pytanie, *czcionka, 50, 1, Color::Blue, L"+");
+	dodaj_pytanie.setPosition(ilosc_pytan_tekst.getPosition().x - dodaj_pytanie.getGlobalBounds().width - 5, ilosc_pytan_tekst.getPosition().y - 15);
 
 	//UsuÒ pytanie
-	Ustawienia_tekstu(usun_pytanie, *czcionka, 25, 1, Color::Blue, L"UsuÒ pytanie");
-	usun_pytanie.setPosition(okno->getSize().x - usun_pytanie.getGlobalBounds().width - 20, dodaj_pytanie.getPosition().y - usun_pytanie.getGlobalBounds().height - 10);
+	Ustawienia_tekstu(usun_pytanie, *czcionka, 50, 1, Color::Blue, L"-");
+	usun_pytanie.setPosition(ilosc_pytan_tekst.getPosition().x + ilosc_pytan_tekst.getGlobalBounds().width + usun_pytanie.getGlobalBounds().width - 20, ilosc_pytan_tekst.getPosition().y - 15);
+
+	//A, B, C, D
+	for (int i = 0; i < v_pytania.size(); i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			Ustawienia_tekstu(wybor.wybor_tekst[j], *czcionka, 30, 0, Color::Blue, wybor_str[j]);
+			wybor.wybor_tekst[j].setPosition(20, 250 + j * 60);
+			wybor.zaznaczenie[j] = v_pytania[i].poprawnosc[j];
+		}//for
+		v_wybor.push_back(wybor);
+	}//for
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------Ustawienie w≥asnoúci elementÛw w strukturze pytaÒ--------------------------------------------------
@@ -128,19 +141,19 @@ void Stworz::Edytuj()
 		v_pytania[i].zaznaczenie_pytania = true;
 
 		rozmiar_czcionki_pytania = 45;
-		v_pytania[i].pytanie.setCharacterSize(rozmiar_czcionki_pytania);
-		while (v_pytania[i].pytanie.getGlobalBounds().width >= okno->getSize().x - 35)
+		v_pytania[kolejne_pytanie].pytanie.setCharacterSize(rozmiar_czcionki_pytania);
+		while (v_pytania[kolejne_pytanie].pytanie.getGlobalBounds().width >= okno->getSize().x - 35)
 		{
 			rozmiar_czcionki_pytania--;
-			v_pytania[i].pytanie.setCharacterSize(rozmiar_czcionki_pytania);
+			v_pytania[kolejne_pytanie].pytanie.setCharacterSize(rozmiar_czcionki_pytania);
 		}//while
-		v_pytania[i].pytanie.setPosition(okno->getSize().x / 2 - v_pytania[i].pytanie.getGlobalBounds().width / 2, 163);
+		v_pytania[kolejne_pytanie].pytanie.setPosition(okno->getSize().x / 2 - v_pytania[kolejne_pytanie].pytanie.getGlobalBounds().width / 2, 163);
 
 		for (int j = 0; j < 4; j++)
 		{
 			//Odpowiedzi
-			Ustawienia_tekstu(v_pytania[i].odpowiedz[j], *czcionka, 45, 0, Color::Blue, v_pytania[i].odpowiedz[j].getString());
-			v_pytania[i].odpowiedz[j].setPosition(150, 250 + j * 60);
+			Ustawienia_tekstu(v_pytania[i].odpowiedz[j], *czcionka, 30, 0, Color::Blue, v_pytania[i].odpowiedz[j].getString());
+			v_pytania[i].odpowiedz[j].setPosition(60, 250 + j * 60);
 
 			//Podkreúlenie
 			v_pytania[i].podkreslenie[j].setSize(Vector2f(0, 0));
@@ -176,7 +189,7 @@ void Stworz::Edytuj()
 						v_pytania[kolejne_pytanie].pytanie.setString(tekst);
 						v_pytania[kolejne_pytanie].pytanie.setPosition(okno->getSize().x / 2 - v_pytania[kolejne_pytanie].pytanie.getGlobalBounds().width / 2, 163);
 					}//if
-					else if ((unicode >= 32 && unicode <= 126) && tekst.size() < maxTextLength)
+					else if ((unicode >= 32 && unicode <= 126))
 					{
 						tekst += static_cast<char>(unicode);
 						v_pytania[kolejne_pytanie].pytanie.setString(tekst);
@@ -194,13 +207,13 @@ void Stworz::Edytuj()
 							{
 								tekst.erase(tekst.size() - 1, 1);
 								v_pytania[kolejne_pytanie].odpowiedz[i].setString(tekst);
-								v_pytania[kolejne_pytanie].odpowiedz[i].setPosition(150, 250 + i * 60);
+								v_pytania[kolejne_pytanie].odpowiedz[i].setPosition(60, 250 + i * 60);
 							}//if
-							else if ((unicode >= 32 && unicode <= 126) && tekst.size() < maxTextLength)
+							else if ((unicode >= 32 && unicode <= 126))
 							{
 								tekst += static_cast<char>(unicode);
 								v_pytania[kolejne_pytanie].odpowiedz[i].setString(tekst);
-								v_pytania[kolejne_pytanie].odpowiedz[i].setPosition(150, 250 + i * 60);
+								v_pytania[kolejne_pytanie].odpowiedz[i].setPosition(60, 250 + i * 60);
 							}//else if
 						}//if
 					}//for
@@ -222,19 +235,19 @@ void Stworz::Edytuj()
 			if (wyd.type == Event::KeyReleased && wyd.key.code == Keyboard::Left && kolejne_pytanie > 0) //Zmiana pytania w lewo
 				kolejne_pytanie--;
 
-			if (dodaj_pytanie.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left)
+			if (dodaj_pytanie.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) //Dodawanie pytania
 				Dodaj_Pytanie();
 
-			if (usun_pytanie.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left)
+			if (usun_pytanie.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) //Usuwanie pytania
 				Usun_Pytanie();
 
-			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left)
+			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) //Wy≥πczenie muzyki
 			{
 				muzyka->pause();
 				glosnik->setTexture(*glosnik_wyciszony_tekstura);
 			}//if
 
-			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Right)
+			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Right) //W≥πczenie muzyki
 			{
 				muzyka->play();
 				glosnik->setTexture(*glosnik_tekstura);
@@ -246,12 +259,18 @@ void Stworz::Edytuj()
 			else if ((v_pytania[kolejne_pytanie].pytanie.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Right) && v_pytania[kolejne_pytanie].zaznaczenie_pytania)
 				v_pytania[kolejne_pytanie].zaznaczenie_pytania = false;
 
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < 4; i++) //Zaznaczanie odpowiedzi
 			{
 				if ((v_pytania[kolejne_pytanie].odpowiedz[i].getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) && !v_pytania[kolejne_pytanie].zaznaczenie[i] && !v_pytania[kolejne_pytanie].zaznaczenie_pytania && !Zaznaczona_Odpowiedz())
 					v_pytania[kolejne_pytanie].zaznaczenie[i] = true;
 				else if ((v_pytania[kolejne_pytanie].odpowiedz[i].getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Right) && v_pytania[kolejne_pytanie].zaznaczenie[i])
 					v_pytania[kolejne_pytanie].zaznaczenie[i] = false;
+
+				//A, B, C, D
+				if (v_wybor[kolejne_pytanie].wybor_tekst[i].getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left)
+					v_wybor[kolejne_pytanie].zaznaczenie[i] = true;
+				else if (v_wybor[kolejne_pytanie].wybor_tekst[i].getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Right)
+					v_wybor[kolejne_pytanie].zaznaczenie[i] = false;
 			}//for
 			//------------------------------------------------------------------------------------------------------------------------------------------------------
 		}//while
@@ -266,15 +285,22 @@ void Stworz::Edytuj()
 		}//if
 		else v_pytania[kolejne_pytanie].podkreslenie_pytania.setSize(Vector2f(0, 0));
 
-		//Odpowiedzi
+		//Odpowiedzi i A, B, C, D
 		for (int i = 0; i < 4; i++)
 		{
 			if (v_pytania[kolejne_pytanie].odpowiedz[i].getGlobalBounds().contains(mysz) || v_pytania[kolejne_pytanie].zaznaczenie[i])
 			{
 				v_pytania[kolejne_pytanie].podkreslenie[i].setSize(Vector2f(v_pytania[kolejne_pytanie].odpowiedz[i].getGlobalBounds().width, 2));
-				v_pytania[kolejne_pytanie].podkreslenie[i].setPosition(v_pytania[kolejne_pytanie].odpowiedz[i].getPosition().x, v_pytania[kolejne_pytanie].odpowiedz[i].getPosition().y + 50);
+				v_pytania[kolejne_pytanie].podkreslenie[i].setPosition(v_pytania[kolejne_pytanie].odpowiedz[i].getPosition().x, v_pytania[kolejne_pytanie].odpowiedz[i].getPosition().y + 40);
 			}//if
 			else v_pytania[kolejne_pytanie].podkreslenie[i].setSize(Vector2f(0, 0));
+
+			if (v_wybor[kolejne_pytanie].wybor_tekst[i].getGlobalBounds().contains(mysz) || v_wybor[kolejne_pytanie].zaznaczenie[i])
+			{
+				v_wybor[kolejne_pytanie].wybor_tekst[i].setOutlineThickness(1);
+				v_wybor[kolejne_pytanie].wybor_tekst[i].setOutlineColor(Color::Cyan);
+			}//if
+			else v_wybor[kolejne_pytanie].wybor_tekst[i].setOutlineThickness(0);
 		}//for
 		 //------------------------------------------------------------------------------------------------------------------------------------------------------
 		//--------------------------------------------------Ustawienia tekstu w quizie--------------------------------------------------
@@ -317,9 +343,26 @@ void Stworz::Edytuj()
 			usun_pytanie.setOutlineThickness(0);
 			dodaj_pytanie.setOutlineThickness(0);
 		}//else
-		 //------------------------------------------------------------------------------------------------------------------------------------------------------
 
-		ilosc_pytan_tekst.setString(L"IloúÊ pytaÒ: " + to_string(ilosc_pytan));
+		ilosc_pytan_tekst.setString(L"IloúÊ pytaÒ: " + to_string(ilosc_pytan)); //IloúÊ pytaÒ
+
+		//Numer pytania
+		Ustawienia_tekstu(numer_pytania, *czcionka, 35, 0, Color::Blue, "Pytanie nr " + to_string(kolejne_pytanie + 1));
+		numer_pytania.setPosition(okno->getSize().x / 2 - numer_pytania.getGlobalBounds().width / 2, 100);
+
+		//Rozmiar pytania i odpowiedzi
+		rozmiar_czcionki_pytania = 45;
+		v_pytania[kolejne_pytanie].pytanie.setCharacterSize(rozmiar_czcionki_pytania);
+		if (v_pytania[kolejne_pytanie].pytanie.getGlobalBounds().width >= okno->getSize().x - 35)
+		{
+			while (v_pytania[kolejne_pytanie].pytanie.getGlobalBounds().width >= okno->getSize().x - 35)
+			{
+				rozmiar_czcionki_pytania--;
+				v_pytania[kolejne_pytanie].pytanie.setCharacterSize(rozmiar_czcionki_pytania);
+			}//while
+		}//if
+		v_pytania[kolejne_pytanie].pytanie.setPosition(okno->getSize().x / 2 - v_pytania[kolejne_pytanie].pytanie.getGlobalBounds().width / 2, 163);
+		 //------------------------------------------------------------------------------------------------------------------------------------------------------
 
 		okno->clear();
 		okno->draw(*tlo);
@@ -330,7 +373,9 @@ void Stworz::Edytuj()
 		{
 			okno->draw(v_pytania[kolejne_pytanie].odpowiedz[j]);
 			okno->draw(v_pytania[kolejne_pytanie].podkreslenie[j]);
+			okno->draw(v_wybor[kolejne_pytanie].wybor_tekst[j]);
 		}//for
+		okno->draw(numer_pytania);
 		okno->draw(nastepne_pytanie);
 		okno->draw(poprzednie_pytanie);
 		okno->draw(zapisz);
@@ -359,6 +404,8 @@ bool Stworz::Zaznaczona_Odpowiedz()
 void Stworz::Dodaj_Pytanie()
 {
 	PYTANIA pytania;
+	string wybor_str[] = { "A. ", "B. ", "C. ", "D. " };
+	WYBOR wybor;
 
 	Ustawienia_tekstu(pytania.pytanie, *czcionka, 45, 0, Color::Blue, L"Przyk≥adowe pytanie");
 	pytania.pytanie.setPosition(okno->getSize().x / 2 - pytania.pytanie.getGlobalBounds().width / 2, 163);
@@ -366,8 +413,12 @@ void Stworz::Dodaj_Pytanie()
 	for (int j = 0; j < 4; j++)
 	{
 		//Odpowiedzi
-		Ustawienia_tekstu(pytania.odpowiedz[j], *czcionka, 45, 0, Color::Blue, L"Przyk≥adowa odpowiedü");
-		pytania.odpowiedz[j].setPosition(150, 250 + j * 60);
+		Ustawienia_tekstu(pytania.odpowiedz[j], *czcionka, 30, 0, Color::Blue, L"Przyk≥adowa odpowiedü");
+		pytania.odpowiedz[j].setPosition(60, 250 + j * 60);
+
+		//A, B, C, D
+		Ustawienia_tekstu(wybor.wybor_tekst[j], *czcionka, 30, 0, Color::Blue, wybor_str[j]);
+		wybor.wybor_tekst[j].setPosition(20, 250 + j * 60);
 
 		//Podkreúlenie
 		pytania.podkreslenie[j].setSize(Vector2f(0, 0));
@@ -378,9 +429,11 @@ void Stworz::Dodaj_Pytanie()
 
 		//Zaznaczenie
 		pytania.zaznaczenie[j] = false;
+		wybor.zaznaczenie[j] = false;
 	}//for
 
 	v_pytania.push_back(pytania);
+	v_wybor.push_back(wybor);
 
 	kolejne_pytanie = v_pytania.size() - 1;
 	ilosc_pytan = v_pytania.size();
@@ -389,9 +442,19 @@ void Stworz::Dodaj_Pytanie()
 void Stworz::Usun_Pytanie()
 {
 	string tekst;
-	v_pytania.erase(v_pytania.begin() + kolejne_pytanie);
+	if (ilosc_pytan > 1)
+	{
+		v_pytania.erase(v_pytania.begin() + kolejne_pytanie);
+		v_wybor.erase(v_wybor.begin() + kolejne_pytanie);
+	}//if
+
 	if (kolejne_pytanie >= v_pytania.size())
 		kolejne_pytanie = v_pytania.size() - 1;
 
 	ilosc_pytan = v_pytania.size();
+}
+
+void Stworz::Zapisz()
+{
+
 }

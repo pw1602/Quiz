@@ -26,9 +26,10 @@ void Quiz::Rozpocznij_Quiz()
 {
 	int kolejne_pytanie = 0; //Numer pytania aktualnie wyúwietlanego
 	bool quiz = true; //False - wyjúcie z Quizu
-	Text pozostaly_czas, nastepne_pytanie, poprzednie_pytanie, zakoncz_quiz, wyjdz_z_quizu;
+	Text pozostaly_czas, nastepne_pytanie, poprzednie_pytanie, zakoncz_quiz, wyjdz_z_quizu, wybor[4], numer_pytania;
 	int minuty = 0, rozmiar_czcionki_pytania = 0;
 	string podzielone_pytanie;
+	string wybor_str[] = { "A. ", "B. ", "C. ", "D. " };
 
 	//--------------------------------------------------Ustawienia tekstu i jego tla w quzie--------------------------------------------------
 	//Czas
@@ -37,7 +38,7 @@ void Quiz::Rozpocznij_Quiz()
 
 	//NastÍpne pytanie
 	Ustawienia_tekstu(nastepne_pytanie, *czcionka, 30, 1, Color::Blue, L"NastÍpne");
-	nastepne_pytanie.setPosition(600, 600);
+	nastepne_pytanie.setPosition(750, 600);
 
 	//Poprzednie pytanie
 	Ustawienia_tekstu(poprzednie_pytanie, *czcionka, 30, 1, Color::Blue, L"Poprzednie");
@@ -48,8 +49,15 @@ void Quiz::Rozpocznij_Quiz()
 	zakoncz_quiz.setPosition(okno->getSize().x / 2 - zakoncz_quiz.getGlobalBounds().width / 2, okno->getSize().y - zakoncz_quiz.getGlobalBounds().height - 20);
 
 	//Wyjúcie z quizu
-	Ustawienia_tekstu(wyjdz_z_quizu, *czcionka, 25, 1, Color::Blue, L"Wyjdü z Quizu");
+	Ustawienia_tekstu(wyjdz_z_quizu, *czcionka, 40, 1, Color::Blue, L"<-");
 	wyjdz_z_quizu.setPosition(20, okno->getSize().y - wyjdz_z_quizu.getGlobalBounds().height - 20);
+
+	//A, B, C, D
+	for (int i = 0; i < 4; i++)
+	{
+		Ustawienia_tekstu(wybor[i], *czcionka, 30, 0, Color::Blue, wybor_str[i]);
+		wybor[i].setPosition(20, 250 + i * 60);
+	}//for
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	if (Ilosc_Pytan())
@@ -77,9 +85,9 @@ void Quiz::Rozpocznij_Quiz()
 		{
 			//Odpowiedzi
 			v_pytania[i].odpowiedz[j].setFont(*czcionka);
-			v_pytania[i].odpowiedz[j].setCharacterSize(45);
-			v_pytania[i].odpowiedz[j].setPosition(150, 250 + j * 60);
+			v_pytania[i].odpowiedz[j].setCharacterSize(30);
 			v_pytania[i].odpowiedz[j].setFillColor(Color::Blue);
+			v_pytania[i].odpowiedz[j].setPosition(60, 250 + j * 60);
 
 			//Podkreúlenie
 			v_pytania[i].podkreslenie[j].setSize(Vector2f(0, 0));
@@ -95,19 +103,21 @@ void Quiz::Rozpocznij_Quiz()
 	while (okno->isOpen() && quiz)
 	{
 		czas = zegar.getElapsedTime().asSeconds(); //Czas do float
+		czas_koniec = zegar.getElapsedTime().asSeconds(); //Czas do float
 		Event wyd; //Przechwytuje wciúniÍte klawicze etc.
 		Vector2f mysz(Mouse::getPosition(*okno)); //Zapisuje pozycje myszy w oknie
 
 		//Ustawienia tekstu wyúwietlajπcego czas i czasu
 		limit_czasu = liczba_pytan * 30 / 60;
+
 		if (czas >= 60)
 		{
 			minuty++;
 			zegar.restart();
 		}//if
 
-		if (minuty == limit_czasu || (minuty + static_cast<int>(czas)) == limit_czasu)
-			koniec_quizu;
+		if (czas_koniec >= (liczba_pytan * 30))
+			koniec_quizu = true;
 
 		if (limit_czasu < 60 && limit_czasu > 0 && liczba_pytan % 2 == 0)
 			pozostaly_czas.setString("Czas to " + to_string(static_cast<int>(limit_czasu)) + " min!: " + to_string(minuty) + " min " + to_string(static_cast<int>(czas)) + " sek");
@@ -135,16 +145,16 @@ void Quiz::Rozpocznij_Quiz()
 			if (wyd.type == Event::KeyReleased && wyd.key.code == Keyboard::Left && kolejne_pytanie > 0) //Zmiana pytania w lewo
 				kolejne_pytanie--;
 
-			if (zakoncz_quiz.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left)
+			if (zakoncz_quiz.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) //ZakoÒczenie quizu
 				koniec_quizu = true;
 
-			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left)
+			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) //Wy≥πczenie muzyki
 			{
 				muzyka->pause();
 				glosnik->setTexture(*glosnik_wyciszony_tekstura);
 			}//if
 
-			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Right)
+			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Right) //W≥πczenie muzyki
 			{
 				muzyka->play();
 				glosnik->setTexture(*glosnik_tekstura);
@@ -169,7 +179,7 @@ void Quiz::Rozpocznij_Quiz()
 			if (v_pytania[kolejne_pytanie].odpowiedz[i].getGlobalBounds().contains(mysz) || v_pytania[kolejne_pytanie].zaznaczenie[i])
 			{
 				v_pytania[kolejne_pytanie].podkreslenie[i].setSize(Vector2f(v_pytania[kolejne_pytanie].odpowiedz[i].getGlobalBounds().width, 2));
-				v_pytania[kolejne_pytanie].podkreslenie[i].setPosition(v_pytania[kolejne_pytanie].odpowiedz[i].getPosition().x, v_pytania[kolejne_pytanie].odpowiedz[i].getPosition().y + 50);
+				v_pytania[kolejne_pytanie].podkreslenie[i].setPosition(v_pytania[kolejne_pytanie].odpowiedz[i].getPosition().x, v_pytania[kolejne_pytanie].odpowiedz[i].getPosition().y + 40);
 			}//if
 			else v_pytania[kolejne_pytanie].podkreslenie[i].setSize(Vector2f(0, 0));
 		}//for
@@ -202,6 +212,10 @@ void Quiz::Rozpocznij_Quiz()
 			zakoncz_quiz.setOutlineThickness(0);
 			wyjdz_z_quizu.setOutlineThickness(0);
 		}//else
+
+		//Numer pytania
+		Ustawienia_tekstu(numer_pytania, *czcionka, 35, 0, Color::Blue, "Pytanie nr " + to_string(kolejne_pytanie + 1));
+		numer_pytania.setPosition(okno->getSize().x / 2 - numer_pytania.getGlobalBounds().width / 2, 100);
 		//------------------------------------------------------------------------------------------------------------------------------------------------------
 		//------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -220,7 +234,9 @@ void Quiz::Rozpocznij_Quiz()
 		{
 			okno->draw(v_pytania[kolejne_pytanie].odpowiedz[j]);
 			okno->draw(v_pytania[kolejne_pytanie].podkreslenie[j]);
+			okno->draw(wybor[j]);
 		}//for
+		okno->draw(numer_pytania);
 		okno->draw(pozostaly_czas);
 		okno->draw(nastepne_pytanie);
 		okno->draw(poprzednie_pytanie);
@@ -242,7 +258,7 @@ bool Quiz::Wczytaj_Dane()
 
 	if (plik.good())
 	{
-		while (getline(plik, linia_tekstu) && ilosc_wczytanych_pytan <= liczba_pytan)
+		while (getline(plik, linia_tekstu) && ilosc_wczytanych_pytan < liczba_pytan)
 		{
 			sredniki = 0;
 			pytanie_zaw = 1;
@@ -314,11 +330,11 @@ bool Quiz::Ilosc_Pytan()
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	//--------------------------------------------------Ustawienia tekstu--------------------------------------------------
-	Ustawienia_tekstu(tekst2, *czcionka, 25, 0, Color::White, "Wybierz iloúÊ pytaÒ:");
+	Ustawienia_tekstu(tekst2, *czcionka, 25, 0, Color::White, L"Wybierz iloúÊ pytaÒ:");
 	tekst2.setPosition(okno->getSize().x / 2 - tekst2.getGlobalBounds().width / 2, 200);
 
-	Ustawienia_tekstu(tekst, *czcionka, 25, 0, Color::White, "Lub podaj iloúÊ pytaÒ:");
-	tekst.setPosition(okno->getSize().x / 2 - tekst.getGlobalBounds().width / 2, okno->getSize().y - 250);
+	Ustawienia_tekstu(tekst, *czcionka, 25, 0, Color::White, L"Lub podaj iloúÊ pytaÒ:");
+	tekst.setPosition(okno->getSize().x / 2 - tekst.getGlobalBounds().width / 2, okno->getSize().y - 350);
 
 	glosnik->setPosition(okno->getSize().x - glosnik->getGlobalBounds().width - 10, 10);
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -435,17 +451,29 @@ bool Quiz::Ilosc_Pytan()
 void Quiz::Wynik()
 {
 	int kolejne_pytanie = 0, punkty = 0, poprawne_punkty = 0; //kolejne_pytanie - kolejne pytanie w vectorze, punkty - iloúÊ uzyskanych pkt, poprawne_punkty - iloúÊ moøliwych pkt za wszystkie poprawne odpowiedzi
-	Text nastepne_pytanie, poprzednie_pytanie, wyjdz, ilosc_pkt;
+	Text nastepne_pytanie, poprzednie_pytanie, wyjdz, ilosc_pkt, wybor[4], numer_pytania;
+	string wybor_str[] = { "A. ", "B. ", "C. ", "D. " };
+	bool dodaj_punkt[4];
 
 	//--------------------------------------------------Ustawienia tekstu i jego tla w wynikach--------------------------------------------------
+	//NastÍpne pytanie
 	Ustawienia_tekstu(nastepne_pytanie, *czcionka, 30, 1, Color::Blue, L"NastÍpne");
-	nastepne_pytanie.setPosition(600, 600);
+	nastepne_pytanie.setPosition(750, 600);
 
+	//Poprzednie pytanie
 	Ustawienia_tekstu(poprzednie_pytanie, *czcionka, 30, 1, Color::Blue, L"Poprzednie");
 	poprzednie_pytanie.setPosition(100, 600);
 
+	//Wyjdü
 	Ustawienia_tekstu(wyjdz, *czcionka, 30, 1, Color::Blue, L"Wyjdü");
 	wyjdz.setPosition(okno->getSize().x / 2 - wyjdz.getGlobalBounds().width / 2, okno->getSize().y - wyjdz.getGlobalBounds().height - 20);
+
+	//A, B, C, D
+	for (int i = 0; i < 4; i++)
+	{
+		Ustawienia_tekstu(wybor[i], *czcionka, 30, 0, Color::Blue, wybor_str[i]);
+		wybor[i].setPosition(20, 250 + i * 60);
+	}//for
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	for (int i = 0; i < v_pytania.size(); i++)
@@ -458,12 +486,12 @@ void Quiz::Wynik()
 				v_pytania[i].odpowiedz[j].setOutlineColor(Color::Black);
 				v_pytania[i].odpowiedz[j].setStyle(Text::Bold);
 				v_pytania[i].odpowiedz[j].setFillColor(Color::Green);
-				poprawne_punkty++;
 			}//if
-
-			if (v_pytania[i].zaznaczenie[j] == v_pytania[i].poprawnosc[j] && v_pytania[i].poprawnosc[j] == 1)
-				punkty++;
 		}//for
+		poprawne_punkty++;
+
+		if (Poprawnosc_Odpowiedzi())
+			punkty++;
 	}//for
 
 	//Ustawienia tekstu - ciπg dalszy
@@ -529,13 +557,19 @@ void Quiz::Wynik()
 			wyjdz.setOutlineThickness(0);
 		}//else
 
+		//Numer pytania
+		Ustawienia_tekstu(numer_pytania, *czcionka, 35, 0, Color::Blue, "Pytanie nr " + to_string(kolejne_pytanie + 1));
+		numer_pytania.setPosition(okno->getSize().x / 2 - numer_pytania.getGlobalBounds().width / 2, 100);
+
 		okno->clear();
 		okno->draw(*tlo);
 		for (int j = 0; j < 4; j++)
 		{
 			okno->draw(v_pytania[kolejne_pytanie].odpowiedz[j]);
 			okno->draw(v_pytania[kolejne_pytanie].podkreslenie[j]);
+			okno->draw(wybor[j]);
 		}//for
+		okno->draw(numer_pytania);
 		okno->draw(v_pytania[kolejne_pytanie].pytanie);
 		okno->draw(nastepne_pytanie);
 		okno->draw(poprzednie_pytanie);
@@ -544,4 +578,32 @@ void Quiz::Wynik()
 		okno->draw(*glosnik);
 		okno->display();
 	}//while
+}
+
+bool Quiz::Poprawnosc_Odpowiedzi()
+{
+	bool poprawne[4];
+	int poprawne_int = 0;
+
+	for (int i = 0; i < v_pytania.size(); i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (v_pytania[i].zaznaczenie[j] && v_pytania[i].poprawnosc[j])
+				poprawne[j] = true;
+			else if (v_pytania[i].zaznaczenie[j] && !v_pytania[i].poprawnosc[j])
+				poprawne[j] = false;
+			else poprawne[j] = true;
+		}//for
+	}//for
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (poprawne[i])
+			poprawne_int++;
+	}//for
+
+	if (poprawne_int == 4)
+		return true;
+	else return false;
 }

@@ -20,7 +20,7 @@ private:
 	Clock zegar; //Mierzy czas
 
 	int liczba_pytan; //Iloœæ pytañ w quzie
-	float czas; //Do pokazania czasu
+	float czas, czas_koniec; //Do pokazania czasu
 	float limit_czasu; //Limit na skoñczenie quizu
 	bool koniec_quizu; //Jeœli skoñczono quiz
 
@@ -38,4 +38,5 @@ private:
 	bool Wczytaj_Dane();
 	bool Ilosc_Pytan(); //Zapytaie u¿ytkownika o iloœæ pytañ do wyœwietlenia
 	void Wynik();
+	bool Poprawnosc_Odpowiedzi();
 };

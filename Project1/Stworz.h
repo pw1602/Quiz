@@ -29,9 +29,16 @@ private:
 	}; //struct
 	vector <PYTANIA> v_pytania;
 
+	struct WYBOR {
+		Text wybor_tekst[4];
+		bool zaznaczenie[4];
+	};
+	vector <WYBOR> v_wybor;
+
 	bool Wczytaj();
 	void Edytuj();
 	bool Zaznaczona_Odpowiedz();
 	void Dodaj_Pytanie();
 	void Usun_Pytanie();
+	void Zapisz();
 };
