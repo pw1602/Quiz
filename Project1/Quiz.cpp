@@ -26,9 +26,8 @@ void Quiz::Rozpocznij_Quiz()
 {
 	int kolejne_pytanie = 0; //Numer pytania aktualnie wyœwietlanego
 	bool quiz = true; //False - wyjœcie z Quizu
-	Text pozostaly_czas, nastepne_pytanie, poprzednie_pytanie, zakoncz_quiz, wyjdz_z_quizu, wybor[4], numer_pytania;
+	Text pozostaly_czas, nastepne_pytanie, poprzednie_pytanie, zakoncz_quiz, wyjdz_z_quizu, wybor[4], numer_pytania; //wybor[4] - tekst zawieraj¹cy A, B, C, D
 	int minuty = 0, rozmiar_czcionki_pytania = 0;
-	string podzielone_pytanie;
 	string wybor_str[] = { "A. ", "B. ", "C. ", "D. " };
 
 	//--------------------------------------------------Ustawienia tekstu i jego tla w quzie--------------------------------------------------
@@ -582,8 +581,8 @@ void Quiz::Wynik()
 
 bool Quiz::Poprawnosc_Odpowiedzi()
 {
-	bool poprawne[4];
-	int poprawne_int = 0;
+	bool poprawne[4]; //Przechowuje czy dana odpowiedŸ by³a poprawna
+	int poprawne_int = 0; //Iloœæ poprawnych odpowiedzi
 
 	for (int i = 0; i < v_pytania.size(); i++)
 	{
@@ -603,7 +602,7 @@ bool Quiz::Poprawnosc_Odpowiedzi()
 			poprawne_int++;
 	}//for
 
-	if (poprawne_int == 4)
+	if (poprawne_int == 4) //Jeœli wszystko by³o zaznaczone poprawnie w pytaniu to zwraca prawdê
 		return true;
 	else return false;
 }

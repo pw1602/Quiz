@@ -40,5 +40,5 @@ private:
 	bool Zaznaczona_Odpowiedz();
 	void Dodaj_Pytanie();
 	void Usun_Pytanie();
-	void Zapisz();
+	bool Zapisz();
 };

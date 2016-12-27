@@ -84,7 +84,7 @@ void Stworz::Edytuj()
 	int rozmiar_czcionki_pytania = 0;
 	bool tworzenie = true, mozliwosc_zaznaczenia = true;
 	Text wyjdz, zapisz, nastepne_pytanie, poprzednie_pytanie, ilosc_pytan_tekst, dodaj_pytanie, usun_pytanie, numer_pytania;
-	wstring tekst; //Tekst jaki zostaje wpisywany
+	string tekst; //Tekst jaki zostaje wpisywany
 	string wybor_str[] = { "A. ", "B. ", "C. ", "D. " };
 	WYBOR wybor;
 
@@ -241,6 +241,12 @@ void Stworz::Edytuj()
 			if (usun_pytanie.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) //Usuwanie pytania
 				Usun_Pytanie();
 
+			if (zapisz.getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) //Zapisanie pytañ do pliku
+				if (Zapisz())
+					MessageBox(NULL, "Zapis powiód³ siê!", "Powodzenie", MB_OK);
+				else
+					MessageBox(NULL, "Zapis nie powiód³ siê!", "B³¹d", MB_OK);
+
 			if (glosnik->getGlobalBounds().contains(mysz) && wyd.type == Event::MouseButtonReleased && wyd.key.code == Mouse::Left) //Wy³¹czenie muzyki
 			{
 				muzyka->pause();
@@ -362,7 +368,7 @@ void Stworz::Edytuj()
 			}//while
 		}//if
 		v_pytania[kolejne_pytanie].pytanie.setPosition(okno->getSize().x / 2 - v_pytania[kolejne_pytanie].pytanie.getGlobalBounds().width / 2, 163);
-		 //------------------------------------------------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 		okno->clear();
 		okno->draw(*tlo);
@@ -403,9 +409,9 @@ bool Stworz::Zaznaczona_Odpowiedz()
 
 void Stworz::Dodaj_Pytanie()
 {
-	PYTANIA pytania;
+	PYTANIA pytania; //Struktura
 	string wybor_str[] = { "A. ", "B. ", "C. ", "D. " };
-	WYBOR wybor;
+	WYBOR wybor; //Struktura
 
 	Ustawienia_tekstu(pytania.pytanie, *czcionka, 45, 0, Color::Blue, L"Przyk³adowe pytanie");
 	pytania.pytanie.setPosition(okno->getSize().x / 2 - pytania.pytanie.getGlobalBounds().width / 2, 163);
@@ -435,8 +441,8 @@ void Stworz::Dodaj_Pytanie()
 	v_pytania.push_back(pytania);
 	v_wybor.push_back(wybor);
 
-	kolejne_pytanie = v_pytania.size() - 1;
-	ilosc_pytan = v_pytania.size();
+	kolejne_pytanie = v_pytania.size() - 1; //Wyœwietlenie dodanego pytania
+	ilosc_pytan = v_pytania.size(); //Zwiêkszenie iloœci pytan
 }
 
 void Stworz::Usun_Pytanie()
@@ -444,17 +450,44 @@ void Stworz::Usun_Pytanie()
 	string tekst;
 	if (ilosc_pytan > 1)
 	{
-		v_pytania.erase(v_pytania.begin() + kolejne_pytanie);
-		v_wybor.erase(v_wybor.begin() + kolejne_pytanie);
+		v_pytania.erase(v_pytania.begin() + kolejne_pytanie); //Usuniêcie aktualnie wyœwietlanego pytania
+		v_wybor.erase(v_wybor.begin() + kolejne_pytanie); //Usunie aktualnie wyœwietlanych mo¿liwoœci (A, B, C, D)
 	}//if
 
 	if (kolejne_pytanie >= v_pytania.size())
 		kolejne_pytanie = v_pytania.size() - 1;
 
-	ilosc_pytan = v_pytania.size();
+	ilosc_pytan = v_pytania.size(); //Zmniejszenie iloœci pytañ
 }
 
-void Stworz::Zapisz()
+bool Stworz::Zapisz()
 {
+	plik.open("data\\questions\\pytania.csv", ios::trunc | ios::out); //Otwarcie w trybie do zapisu i wykasowanie poprzedniej zawartoœci
 
+	if (plik.good())
+	{
+		for (int i = 0; i < v_pytania.size(); i++)
+		{
+			plik << v_pytania[i].pytanie.getString().toAnsiString();
+			plik << ";";
+
+			for (int j = 0; j < 4; j++)
+			{
+				plik << v_pytania[i].odpowiedz[j].getString().toAnsiString();
+				plik << ";";
+			}//for
+
+			for (int y = 0; y < 4; y++)
+			{
+				plik << v_wybor[i].zaznaczenie[y];
+			}//for
+			plik << ";";
+			plik << endl;
+		}//for
+
+		return true;
+	}//if
+	else return false;
+
+	return false;
 }

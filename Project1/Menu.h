@@ -16,7 +16,7 @@ private:
 	const int ile_obrazkow = 7;
 	RenderWindow okno;
 	Font czcionka;
-	Texture teksturki[7];
+	Texture teksturki[7]; //Tekstury do menu "POMOC"
 	Music muzyka;
 	Texture tlo_tekstura_menu, tlo_tekstura_pomoc, glosnik_tekstura, glosnik_wyciszony_tekstura, kartka_papieru_tekstura;
 	Sprite tlo_menu, tlo_pomoc, glosnik;
