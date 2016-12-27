@@ -582,8 +582,8 @@ void Quiz::Wynik()
 
 bool Quiz::Poprawnosc_Odpowiedzi()
 {
-	bool poprawne[4];
-	int poprawne_int = 0;
+	bool poprawne[4]; //Przechowuje czy dana odpowiedŸ by³a poprawna
+	int poprawne_int = 0; //Iloœæ poprawnych odpowiedzi
 
 	for (int i = 0; i < v_pytania.size(); i++)
 	{
@@ -602,8 +602,8 @@ bool Quiz::Poprawnosc_Odpowiedzi()
 		if (poprawne[i])
 			poprawne_int++;
 	}//for
-
-	if (poprawne_int == 4)
+	
+	if (poprawne_int == 4) //Jeœli wszystko by³o zaznaczone poprawnie w pytaniu to zwraca prawdê
 		return true;
 	else return false;
 }
