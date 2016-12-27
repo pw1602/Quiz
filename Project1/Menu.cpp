@@ -74,7 +74,7 @@ void Menu::menu()
 {
 	const int ile = 4; //Iloœæ wyborów w menu
 	String str[] = { L"Rozwi¹¿ Quiz", L"Edytuj Quiz", L"Pomoc", L"Zakoñcz" };
-	Text tekst[ile]; //Zawiera str[], ale jest tylko do wyœwietlenia i manipulacji wyœwietlanym tekstem
+	Text tekst[ile];
 
 	for (int i = 0; i < ile; i++)
 	{
